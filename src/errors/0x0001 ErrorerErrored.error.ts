@@ -1,0 +1,1 @@
+export const ErrorerErrored: Error = new Error("0x0001 ERRORER_ERRORED!");

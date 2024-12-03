@@ -1,0 +1,1 @@
+export const CommandNotFound: Error = new Error("0x0404 COMMAND_NOT_FOUND");

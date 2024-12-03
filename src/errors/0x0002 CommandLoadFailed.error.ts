@@ -1,0 +1,1 @@
+export const CommandLoadFailed: Error = new Error("0x0002 COMMAND_LOAD_FAILED");

@@ -1,0 +1,1 @@
+export type { IErrorer } from "./errorer.abstraction"
