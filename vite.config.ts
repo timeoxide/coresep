@@ -3,6 +3,7 @@ import mkcert from 'vite-plugin-mkcert'
 
 const is_development = true;
 export default defineConfig({
+    
     build: {
         assetsDir: "assets",
         target: "esnext",
