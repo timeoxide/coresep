@@ -3,7 +3,17 @@ import mkcert from 'vite-plugin-mkcert'
 
 const is_development = true;
 export default defineConfig({
-
+    test: {
+        deps: {
+            optimizer: {
+                web: {
+                    exclude: ['react/jsx-runtime'],
+                    // or disable alltogether
+                    enabled: false,
+                }
+            }
+        }
+    },
     build: {
         assetsDir: "assets",
         target: "esnext",
@@ -17,7 +27,7 @@ export default defineConfig({
         sourcemap: is_development,
         outDir: 'dist',
         emptyOutDir: true,
-    
+
         lib: {
             entry: "src/lib.ts",
             name: "crs"

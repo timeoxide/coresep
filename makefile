@@ -3,3 +3,6 @@ build:
 
 dev:
 	pnpm run dev
+
+test:
+	vitest
