@@ -17,10 +17,17 @@ const errors = new Map<string, Error>([
  * 
  * The _not-so-gracefull_ error manager.
  * used to lookup errors by code, add context and throw them.
+ * The error codes could be looked up through `ERRORS` constants.
  * 
  * # **Example Usage:**
  * ```
- * errorer.select("0x0404").withContext('Command not found: myCommand').throw();
+ * ...
+ * 
+ * errorer
+ *      .select("0x0404")
+ *      .withContext('Command not found: myCommand')
+ *      .throw();
+ * ...
  * ```
  */
 export class Errorer implements IErrorer {

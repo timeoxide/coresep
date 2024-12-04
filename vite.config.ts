@@ -5,9 +5,11 @@ const is_development = true;
 export default defineConfig({
     
     build: {
+
         assetsDir: "assets",
-        target: "esnext",
+        target: "esm",
         rollupOptions: {
+            input: ["src/lib.ts", "src/adaptations/factory.default.ts"],
             output: {
                 assetFileNames: "[name].[ext]",
                 entryFileNames: "[name].js"
