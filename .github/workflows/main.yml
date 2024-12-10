@@ -1,37 +1,26 @@
-name: Test
-on: 
+name: Test and Coverage
+
+on:
   push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    permissions:
-      # Required to checkout the code
-      contents: read
-      # Required to put a comment into the pull-request
-      pull-requests: write
-      
-    strategy:
-      matrix:
-        node-version: [22]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 9
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-    - name: Install dependencies
-      run: pnpm install
-    - name: Test
-      run: pnpm exec vitest --coverage.enabled true
-    - name: Report Coverage
-      # Set if: always() to also generate the report if tests are failing
-      # Only works if you set `reportOnFailure: true` in your vite config as specified above
-      if: always() 
-      uses:  davelosert/vitest-coverage-report-action@v2
+      - name: Set up Checkout
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Run Tests and Generate Coverage
+        run: pnpm exec vitest --coverage.enabled true
