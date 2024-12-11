@@ -1,15 +1,14 @@
-import { defineConfig } from 'vite'
+import { defineConfig, } from 'vite'
 import mkcert from 'vite-plugin-mkcert'
 
 const is_development = true;
 export default defineConfig({
-    
-    build: {
 
+    build: {
         assetsDir: "assets",
-        target: "esm",
+        target: "modules",
         rollupOptions: {
-            input: ["src/lib.ts", "src/adaptations/factory.default.ts"],
+            input: ["src/index.ts"],
             output: {
                 assetFileNames: "[name].[ext]",
                 entryFileNames: "[name].js"
@@ -20,8 +19,10 @@ export default defineConfig({
         outDir: 'dist',
         emptyOutDir: true,
 
+
+
         lib: {
-            entry: "src/lib.ts",
+            entry: "src/index.ts",
             name: "crs"
         },
     },
@@ -30,7 +31,7 @@ export default defineConfig({
         port: 2099
     },
     resolve: {
-        alias: [{ find: '@', replacement: '/src' }, { find: '$lib', replacement: '/src/lib' }],
+        alias: [{ find: '@', replacement: '/src' }],
     },
     plugins: [
         mkcert(),

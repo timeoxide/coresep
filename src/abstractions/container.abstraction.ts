@@ -28,5 +28,5 @@ export interface ICrsContainer {
      * @param model The model to pass to the command.
      * @returns A Promise that resolves to the result of the command.
      */
-    invoke<TModel = void, TResult = void>(name: string, model: TModel): Promise<TResult>;
+    invoke<TModel = void, TResult = void>(name: string, model?: TModel): Promise<TResult>;
 }

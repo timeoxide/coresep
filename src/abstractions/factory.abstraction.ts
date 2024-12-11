@@ -18,7 +18,7 @@ export interface ICrsFactory {
     * ---
     * @returns The built `ICrsContainer` instance.
     */
-    build(): ICrsContainer;
+    Build(): ICrsContainer;
 
     /**
      * Configures the factory to assign the container to window properties.
