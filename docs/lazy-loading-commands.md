@@ -6,15 +6,17 @@
 
 If you just have too many commands and want them to be loaded on demand, you could use the lazy loading feature.
 
+<br />
+
 ## Requirement
 
 To use lazy loading __*you have to use modules*__.
 
 <br />
 
-## Export it
+## Export it!
 
-When exporting the `commands` you have the option to use the command or an async function that returns an function:
+When exporting the `commands` of a module you have the option to use the command or an async function that returns a function:
 
 ```typescript
 // file: src/commands/myModule/index.ts
@@ -36,11 +38,13 @@ export const commands = [
 
 ## Invoke it!
 
-Remember, that all of the commands registered via a module, should be invoked using the format `moduleName.commandName`.
+A lazy-loaded command is invoked normally like any other command.
+
+Remember, that all of the commands registered via a module, should be invoked using the format `moduleName.commandName` or with version `moduleName.commandName@version`.
 
 <br />
 
-## Version
+## Name and Version
 
 > [!IMPORTANT]
 > When lazy loaing a command the provided name in the module overrides the exported name by the command itself.

@@ -15,9 +15,9 @@ const model = {}
 const result = await invoke("myCommand", model);
 ```
 
-The model is optional. If you pass a model, it will be passed to your command's handler.
+The model is optional. If used, it will be passed to your command's handler.
 
-`invoke` function accepts two generics:
+The `invoke` function accepts two generics:
 
 ```typescript
 const model: TModel = {};
@@ -26,7 +26,7 @@ const result: TResult = await invoke<TModel, TResult>("myCommand", model);
 <br />
 
 ## Version
-You can add the optional `version` to your command as demonstrated here:
+You can add the optional `version` to your command as demonstrated blow:
 ```typescript
 ...
 

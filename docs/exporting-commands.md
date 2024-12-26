@@ -10,14 +10,14 @@ Exporting commands instead of defining them inline leads to better organized cod
 
 ## Structure
 
-I personally organize my code sith this structure:
+I personally organize my code like this:
 
 ```
 | src
    | commands
-      > mySecondCommand.command.ts
+      > myFirstCommand.command.ts
       | myModule
-         > myFirstCommand.command.ts
+         > mySecondCommand.command.ts
 ```
 
 I use `.command.ts`, The names and extensions of the files and folders are irrelevant to the functionality of the container or factory.
@@ -29,7 +29,7 @@ I use `.command.ts`, The names and extensions of the files and folders are irrel
 The names of the exports are vital to the functionality of the container. Export the following from a file:
 
 ```typescript
-// file: myFirstCommand.command.ts
+// file: src/commands/myFirstCommand.command.ts
 
 export const name = "myFirstCommand";
 
@@ -42,6 +42,8 @@ export const handler = (name: string) => {
 };
 ```
 
+Naturally the version is optional.
+
 <br />
 
 ## Use it!
@@ -50,7 +52,7 @@ To use an exported command you can simply import it as demonstrated here:
 ```typescript
 import * as myFirstCommand from "./myFirstCommand.command"
 
-// its just the same thing as the command we defined before
+// It's just the same thing as the command we have defined before.
 // console.log(myFirstCommand.name)
 // console.log(myFirstCommand.version)
 // console.log(myFirstCommand.meta)

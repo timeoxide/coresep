@@ -6,13 +6,17 @@
 
 Factory is the class, which creates the command containers.
 
+<br />
+
 ## Overview
 
-When dom is loaded or your application is first loading, you will need to construct the container with `AsWindowProp` method to create the global command.
+When dom is loaded or your application is first loading, you will need to construct the container with `AsWindowProp` method to create the global command container.
 
 You can then organize your commands by modules ( not to be confused with es modules ) or exported commands. Modules will give you the advantage of lazy loading the commands and namespacing them.
 
 In order to have more that a single container checkout <a href="./more-containers.md"> here </a>.
+
+<br />
 
 ## Initialization
 
@@ -28,9 +32,11 @@ const container = Factory.new()
 
 this creates a new instance of the container and assigns it to the `crs` property of the window.
 
-## Adding a simple command
+<br />
 
-We encourage you to use exported commands and preferably modules, but here we create a simple command:
+## Add a simple command
+
+We encourage you to use exported commands and preferably modules, but for now we will create a simple command:
 
 ```typescript
 const myFirstCommand = {

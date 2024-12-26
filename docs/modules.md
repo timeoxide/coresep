@@ -4,7 +4,7 @@
    </b>
 </h1>
 
-Modules are just a object containing a `name` and `commands`.
+Modules are just objects containing a `name` and a `commands` array.
 
 <br />
 
@@ -37,16 +37,16 @@ export const commands = {
 
 ## Register it!
 
-To register an exported module import it and use `RegisterModule` with factory:
+To register an exported module import it and use `RegisterModule` of the factory:
 ```typescript
 import * as myModule from "./commands/myModule";
 
 Factory.new()
-   // ...
-   .AsWindowProp()
    // this adds all the commands from the module to your container
    .RegisterModule(myModule)
+
    // ...
+   .AsWindowProp()
    .Build()
 
 ```
@@ -54,7 +54,7 @@ Factory.new()
 
 ## Invoke it!
 
-Remember, that all of the commands registered via a module, should be invoked using the format `moduleName.commandName`.
+Remember, that all of the commands registered via a module, should be invoked using the format `moduleName.commandName` or with version `moduleName.commandName@version`.
 
 <br />
 

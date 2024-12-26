@@ -11,7 +11,7 @@ export const myOtherContainer = Factory.new()
    // Register your commands and modules here...
 
    // Since `AsWindowProp` was not called
-   // it wont override `window.crs` property.
+   // it won't override `window.crs` property.
    .Build()
 ```
 
@@ -25,7 +25,7 @@ You can use it just like the exported invoke function as demonstrated blow:
 
 import { container } from "/path/to/your/container";
 
-const result = container.invoke("myModule.myCommand@latest");
+const result = await container.invoke("myModule.myCommand@latest");
 ```
 
 <br />
