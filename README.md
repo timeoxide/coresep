@@ -24,7 +24,6 @@
 
 - [Documantation](#documentation)
 - [Installation](#installation)
-- [Getting start](./docs/getting-started.md)
 - [License](#license)
 
 <br />
