@@ -9,7 +9,7 @@
 
 <div align="center">
 
-[![build][build-image]](build)
+[![build][build-image]](./actions)
 [![License][license-image]][license-url]
 
 [build-image]: https://img.shields.io/github/actions/workflow/status/timeoxide/crs/main.yml?label=build&branch=main
@@ -23,7 +23,7 @@
 ## Table of Contents
 
 - [Documantation](#documentation)
-<!-- - [Installation](#installation) -->
+- [Installation](#installation)
 - [Getting start](./docs/getting-started.md)
 - [License](#license)
 
@@ -32,17 +32,18 @@
 ## Documentation
 
 <p>
-    To read the full documentation of the project <a href="./docs/main.md"> visit here </a>.
+    To read the documentation  <a href="./docs/main.md"> visit here </a>.
 </p>
 <br />
 
-<!-- ## Installation -->
+## Installation
 
+To Install it with npm simply use:
+```bash
+npm install coresep --save-dev
+```
+<br/>
 
-## Getting Started
-
-Working on it...
-<br />
 
 ## License
 

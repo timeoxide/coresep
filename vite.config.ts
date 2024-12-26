@@ -1,5 +1,6 @@
 import { defineConfig, } from 'vite'
 import mkcert from 'vite-plugin-mkcert'
+import dts from 'vite-plugin-dts'
 
 const is_development = true;
 export default defineConfig({
@@ -15,7 +16,7 @@ export default defineConfig({
             }
         },
 
-        sourcemap: is_development,
+        sourcemap: true,
         outDir: 'dist',
         emptyOutDir: true,
 
@@ -23,7 +24,8 @@ export default defineConfig({
 
         lib: {
             entry: "src/index.ts",
-            name: "crs"
+            name: "coresep",
+            formats: ['es', 'cjs'],
         },
     },
     server: {
@@ -35,5 +37,13 @@ export default defineConfig({
     },
     plugins: [
         mkcert(),
+        dts({
+            include: ["src/index.ts"],
+            // rollupTypes: true,
+            tsconfigPath: "./tsconfig.json",
+            outDir: "./dist",
+            insertTypesEntry: true,
+
+        })
     ]
 })
