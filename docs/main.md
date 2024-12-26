@@ -14,6 +14,7 @@ Coresep ( command responsibility separation ) can be used to separate the comman
 - [Importing commands from a file](exporting-commands.md)
 - [Organizing the commands into modules](modules.md)
 - [Lazy loading commands](lazy-loading-commands.md)
+- [More than one global container](more-containers.md)
 
 <br />
 
