@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "version-number.bat && tsc && vite build",
+    "build": "build-number.bat && tsc && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
