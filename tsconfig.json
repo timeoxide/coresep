@@ -15,12 +15,6 @@
     /* aliases */
     "baseUrl": ".",
     "paths": {
-      "$lib": [
-        "./src/lib"
-      ],
-      "$lib/*": [
-        "./src/lib/*"
-      ],
       "@/*": [
         "./src/*"
       ]
@@ -39,6 +33,8 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src"
+    "src",
+    "src/**/*",
+    "./src/tests/*.test.ts"
   ]
 }

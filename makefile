@@ -5,4 +5,4 @@ dev:
 	pnpm run dev
 
 test:
-	vitest --coverage.enabled true
+	npx vitest --coverage.enabled true
