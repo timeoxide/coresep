@@ -26,7 +26,7 @@ export interface ICrsFactory {
      * ---
      * @returns The configured factory instance.
      */
-    AsWindowProp(): ICrsFactory;
+    Singlton(): ICrsFactory;
 
     /**
      * Registers a command to be included in the container.

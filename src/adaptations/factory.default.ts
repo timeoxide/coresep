@@ -4,6 +4,7 @@ import { Command, CommandModule } from "@/models";
 import { PreloadedInitiator } from "./initiator.preloaded";
 import { LazyInitiator } from "./initiator.lazy";
 import { DefaultContainer } from "./container.default";
+import { SYMBOLS } from "@/constants/symbols.const";
 
 /**
  * An implementation of the `ICrsFactory` interface used to create container.
@@ -18,7 +19,7 @@ export class DefaultFactory implements ICrsFactory {
     /**
      * Flag indicating if the container will be assigned to `window.crs`.
      */
-    private _asWindowProp: boolean = false;
+    private _asSingleton: boolean = false;
 
     /**
      * Internal map storing registered initiators for commands.
@@ -74,8 +75,8 @@ export class DefaultFactory implements ICrsFactory {
      */
     public Build(): ICrsContainer {
         const container = new DefaultContainer(this.initiators);
-        if (this._asWindowProp) {
-            (window as any)["crs"] = container;
+        if (this._asSingleton) {
+            (globalThis as any)[SYMBOLS.SingltonContainer] = container;
         }
         return container;
     }
@@ -87,8 +88,8 @@ export class DefaultFactory implements ICrsFactory {
      * ---
      * @returns The configured factory instance.
      */
-    public AsWindowProp() {
-        this._asWindowProp = true;
+    public Singlton() {
+        this._asSingleton = true;
         return this;
     }
 
