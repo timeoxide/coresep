@@ -6,5 +6,5 @@ export const SYMBOLS = {
     /**
      * Symbol used to identify the singleton container in the core separation module.
      */
-    SingltonContainer: Symbol.for("symbol.singleton.coresep"),
+    SingletonContainer: Symbol.for("symbol.singleton.coresep"),
 };

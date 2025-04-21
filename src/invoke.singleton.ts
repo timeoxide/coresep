@@ -1,4 +1,4 @@
-import { container } from "./container.singlton";
+import { container } from "./container.singleton";
 
 /**
  * Invokes a registered command in the commands container.

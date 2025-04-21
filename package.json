@@ -12,10 +12,20 @@
       "require": "./dist/index.cjs.js",
       "types": "./dist/types/index.d.ts"
     },
-    "./test": {
-      "import": "./dist/test.es.js",
-      "require": "./dist/test.cjs.js",
-      "types": "./dist/types/test.d.ts"
+    "./models": {
+      "import": "./dist/models.es.js",
+      "require": "./dist/models.cjs.js",
+      "types": "./dist/types/models.d.ts"
+    },
+    "./abstractions": {
+      "import": "./dist/abstractions.es.js",
+      "require": "./dist/abstractions.cjs.js",
+      "types": "./dist/types/abstractions.d.ts"
+    },
+    "./vite-plugin-coresep": {
+      "import": "./dist/vite-plugin-coresep.es.js",
+      "require": "./dist/vite-plugin-coresep.cjs.js",
+      "types": "./dist/types/vite-plugin-coresep.d.ts"
     }
   },
   "files": [
@@ -33,10 +43,14 @@
     "@types/node": "22.14.1",
     "@vitest/coverage-v8": "^3.1.1",
     "dotenv": "^16.5.0",
+    "es-module-lexer": "^1.6.0",
+    "fast-glob": "^3.3.3",
+    "rollup-plugin-node-externals": "^8.0.0",
     "typescript": "^5.8.3",
-    "vite": "^6.2.6",
+    "vite": "6.2.2",
     "vite-plugin-dts": "^4.5.3",
     "vite-plugin-mkcert": "1.17.8",
+    "vite-plugin-node-polyfills": "^0.23.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.1"
   }

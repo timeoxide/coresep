@@ -1,3 +1,3 @@
 export { DefaultFactory as Factory } from "./adaptations/factory.default";
-export { container } from "./container.fromWindow";
-export { invoke } from "./invoke.fromWindow";
+export { container } from "./container.singleton";
+export { invoke } from "./invoke.singleton";

@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "fs";
 import { resolve } from "path";
+import {nodeExternals} from "rollup-plugin-node-externals"
 
 const dirname =
   typeof __dirname !== "undefined"
@@ -18,18 +19,25 @@ const packageJson = JSON.parse(
 const version = packageJson.version;
 config({ path: ".env.version" });
 const is_development = true;
+
 export default defineConfig({
+  define: {
+    __BUILD_NUMBER__: JSON.stringify(process.env.BUILD_NUMBER),
+  },
   build: {
     lib: {
       entry: {
         index: "src/index.ts",
-        test: "src/test.ts"
+        models: "src/models/index.ts",
+        abstractions: "src/abstractions/index.ts",
+        "vite-plugin-coresep": "src/vite-plugin-coresep.ts",
       },
       name: "coresep",
       formats: ["es", "cjs"],
       fileName: (format) => `index.${format === "cjs" ? "cjs" : "js"}`,
     },
     rollupOptions: {
+      external: ["node:fs/promises"],
       output: {
         entryFileNames: "[name].[format].js",
       },
@@ -53,7 +61,8 @@ export default defineConfig({
     mkcert(),
     dts({
       outDir: "./dist/types/",
-      insertTypesEntry: true
+      insertTypesEntry: true,
     }),
+    nodeExternals({})
   ],
 });
