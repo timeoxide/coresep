@@ -8,24 +8,24 @@
   "types": "./dist/types/",
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/index.cjs.js"
     },
     "./models": {
+      "types": "./dist/types/models.d.ts",
       "import": "./dist/models.es.js",
-      "require": "./dist/models.cjs.js",
-      "types": "./dist/types/models.d.ts"
+      "require": "./dist/models.cjs.js"
     },
     "./abstractions": {
+      "types": "./dist/types/abstractions.d.ts",
       "import": "./dist/abstractions.es.js",
-      "require": "./dist/abstractions.cjs.js",
-      "types": "./dist/types/abstractions.d.ts"
+      "require": "./dist/abstractions.cjs.js"
     },
     "./vite-plugin-coresep": {
+      "types": "./dist/types/vite-plugin-coresep.d.ts",
       "import": "./dist/vite-plugin-coresep.es.js",
-      "require": "./dist/vite-plugin-coresep.cjs.js",
-      "types": "./dist/types/vite-plugin-coresep.d.ts"
+      "require": "./dist/vite-plugin-coresep.cjs.js"
     }
   },
   "files": [
