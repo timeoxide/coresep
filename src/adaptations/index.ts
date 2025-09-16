@@ -3,3 +3,4 @@ export { DefaultFactory } from "./factory.default";
 export { DefaultContainer } from "./container.default";
 export { LazyInitiator } from "./initiator.lazy";
 export { PreloadedInitiator } from "./initiator.preloaded";
+export { ViteFileResolver } from "./resolver.vite";

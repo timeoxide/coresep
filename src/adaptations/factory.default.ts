@@ -1,9 +1,10 @@
 import type { ICrsContainer, ICrsFactory } from "@/abstractions";
 import { IInitiator } from "@/abstractions/initiator.abstraction";
-import { Command, CommandModule } from "@/models";
+import { Command, Module } from "@/models";
 import { PreloadedInitiator } from "./initiator.preloaded";
 import { LazyInitiator } from "./initiator.lazy";
 import { DefaultContainer } from "./container.default";
+import { SYMBOLS } from "@/constants/symbols.const";
 
 /**
  * An implementation of the `ICrsFactory` interface used to create container.
@@ -12,125 +13,160 @@ import { DefaultContainer } from "./container.default";
  * instances based on the configuration and provided commands.
  */
 export class DefaultFactory implements ICrsFactory {
+  // #region props
 
-    // #region props
+  /**
+   * Flag indicating if the container will be assigned to `window.crs`.
+   */
+  private _asSingleton: boolean = false;
 
-    /**
-     * Flag indicating if the container will be assigned to `window.crs`.
-     */
-    private _asWindowProp: boolean = false;
+  /**
+   * Internal map storing registered initiators for commands.
+   */
+  private _initiators: Map<string, IInitiator> = new Map();
 
-    /**
-     * Internal map storing registered initiators for commands.
-     */
-    private _initiators: Map<string, IInitiator> = new Map();
+  /**
+   * Getter for the internal map of registered initiators.
+   *
+   * ---
+   * @returns The map of registered initiators.
+   */
+  public get initiators(): Map<string, IInitiator> {
+    return this._initiators;
+  }
+  // #endregion
 
-    /**
-     * Getter for the internal map of registered initiators.
-     * 
-     * ---
-     * @returns The map of registered initiators.
-     */
-    public get initiators(): Map<string, IInitiator> {
-        return this._initiators;
+  /**
+   * Default constructor for the `DefaultFactory`.
+   */
+  constructor(private name: string = "default") {}
+
+  /**
+   * Factory method to create a new instance of `DefaultFactory`.
+   * Use this to chain the commands.
+   *
+   * ---
+   * ## **Example Usage:**
+   * ```typescript
+   * ...
+   * const container = Factory.new()
+   *      .RegisterModule(myModule)
+   *      .AsWindowProp()
+   *      .Build()
+   * ...
+   * ```
+   *
+   * ---
+   * @returns A new instance of `DefaultFactory`.
+   */
+  public static new(name: string = "default") {
+    return new DefaultFactory(name);
+  }
+
+  /**
+   * Builds a new `ICrsContainer` instance with the registered commands and
+   * modules. if `AsWindowProp` is called. it will also assign it to
+   * `window.crs`.
+   *
+   * ---
+   * @returns The built `ICrsContainer` instance.
+   */
+  public Build(): ICrsContainer {
+    const container = new DefaultContainer(this.initiators);
+    if (this._asSingleton) {
+      (globalThis as any)[SYMBOLS.SingletonContainer(this.name)] = container;
     }
-    // #endregion
+    return container;
+  }
 
+  /**
+   * Configures the factory to assign the container to `window.crs` during the build.
+   *
+   * ---
+   * @returns The configured factory instance.
+   */
+  public Singlton() {
+    this._asSingleton = true;
+    return this;
+  }
 
-    /**
-     * Default constructor for the `DefaultFactory`.
-     */
-    constructor() { }
+  /**
+   * Registers a single command to be added to container.
+   *
+   * The command is registered with its name and version (if available) as the key,
+   * and wrapped in a `PreloadedInitiator`. Hence it will not load asynchronously.
+   *
+   * ---
+   * @param command The command to register.
+   * @returns The configured factory instance.
+   */
+  public RegisterCommand(command: Command) {
+    this.initiators.set(
+      `${command.name}${command.version ? "@" : ""}${command.version ?? ""}`,
+      new PreloadedInitiator(command)
+    );
+    return this;
+  }
 
-
-    /**
-     * Factory method to create a new instance of `DefaultFactory`.
-     * Use this to chain the commands.
-     * 
-     * ---
-     * ## **Example Usage:**
-     * ```typescript
-     * ...
-     * const container = Factory.new()
-     *      .RegisterModule(myModule)
-     *      .AsWindowProp()
-     *      .build()
-     * ...
-     * ```
-     * 
-     * ---
-     * @returns A new instance of `DefaultFactory`.
-     */
-    public static new() { return new DefaultFactory() };
-
-
-    /**
-     * Builds a new `ICrsContainer` instance with the registered commands and
-     * modules. if `AsWindowProp` is called. it will also assign it to
-     * `window.crs`.
-     * 
-     * ---
-     * @returns The built `ICrsContainer` instance.
-     */
-    public Build(): ICrsContainer {
-        const container = new DefaultContainer(this.initiators);
-        if (this._asWindowProp) {
-            (window as any)["crs"] = container;
-        }
-        return container;
+  /**
+   * Registers a module containing multiple commands with the factory.
+   *
+   * Dependending on the type of the registered command (lazy or eager),
+   * it uses the correct initiator to hold the command for usage
+   *
+   * ---
+   * @param module The module containing commands to register.
+   * @returns The configured factory instance.
+   */
+  public RegisterModule(module: Module) {
+    for (const key in module.commands) {
+      if (!Object.prototype.hasOwnProperty.call(module.commands, key)) {
+        continue;
+      }
+      const command = module.commands[key];
+      if (typeof command == "function") {
+        const name = `${key}`;
+        this.initiators.set(name, new LazyInitiator(command, name));
+      } else {
+        this.initiators.set(
+          `${command.name}${command.version ? "@" : ""}${
+            command.version ?? ""
+          }`,
+          new PreloadedInitiator(command)
+        );
+      }
     }
+    return this;
+  }
 
-
-    /**
-     * Configures the factory to assign the container to `window.crs` during the build.
-     * 
-     * ---
-     * @returns The configured factory instance.
-     */
-    public AsWindowProp() {
-        this._asWindowProp = true;
-        return this;
+  /**
+   * Registers a module containing multiple commands with the factory.
+   *
+   * Dependending on the type of the registered command (lazy or eager),
+   * it uses the correct initiator to hold the command for usage
+   *
+   * ---
+   * @param module The module containing commands to register.
+   * @returns The configured factory instance.
+   */
+  public RegisterModuleFromLib(lib: string, module: Module) {
+    for (const key in module.commands) {
+      if (!Object.prototype.hasOwnProperty.call(module.commands, key)) {
+        continue;
+      }
+      const command = module.commands[key];
+      if (typeof command == "function") {
+        const name = `${key}`;
+        this.initiators.set(`${lib}.${name}`, new LazyInitiator(command, `${lib}.${name}`));
+      } else {
+        this.initiators.set(
+          `${lib}.${command.name}${command.version ? "@" : ""}${
+            command.version ?? ""
+          }`,
+          new PreloadedInitiator(command)
+        );
+      }
     }
-
-
-    /**
-     * Registers a single command to be added to container.
-     * 
-     * The command is registered with its name and version (if available) as the key, 
-     * and wrapped in a `PreloadedInitiator`. Hence it will not load asynchronously.
-     * 
-     * ---
-     * @param command The command to register.
-     * @returns The configured factory instance.
-     */
-    public RegisterCommand(command: Command) {
-        this.initiators.set(`${command.name}${command.version ? '@' : ''}${command.version ?? ''}`, new PreloadedInitiator(command));
-        return this;
-    }
-
-
-    /**
-     * Registers a module containing multiple commands with the factory. 
-     * 
-     * Dependending on the type of the registered command (lazy or eager),
-     * it uses the correct initiator to hold the command for usage
-     * 
-     * ---
-     * @param module The module containing commands to register.
-     * @returns The configured factory instance.
-     */
-    public RegisterModule(module: CommandModule) {
-        for (const key in module.commands) {
-            if (!Object.prototype.hasOwnProperty.call(module.commands, key)) { continue; }
-            const command = module.commands[key];
-            if (typeof command == 'function') {
-                const name = `${module.name}.${key}`;
-                this.initiators.set(name, new LazyInitiator(command, name));
-            }
-            else {
-                this.initiators.set(`${command.name}${command.version ? '@' : ''}${command.version ?? ''}`, new PreloadedInitiator(command));
-            }
-        }
-        return this;
-    }
+    return this;
+  }
 }

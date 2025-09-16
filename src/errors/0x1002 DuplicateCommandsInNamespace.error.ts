@@ -1,0 +1,1 @@
+export const DuplicateCommandsInNamespace: Error = new Error("0x1002 DUPLICATE_COMMAND_IN_NAMESCPACE");

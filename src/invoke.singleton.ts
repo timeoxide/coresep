@@ -1,4 +1,4 @@
-import { container } from "./container.fromWindow";
+import { container } from "./container.singleton";
 
 /**
  * Invokes a registered command in the commands container.
@@ -32,6 +32,6 @@ import { container } from "./container.fromWindow";
  * @param model Optional model to pass to the function.
  * @returns The result of the invoked function.
  */
-export async function invoke<TModel = any | undefined, TResult = any>(name: string, model?: TModel): Promise<TResult> {
-    return await container().invoke(name, model);
+export async function invoke<TModel = any | undefined, TResult = any>(name: string, model?: TModel, containerName = "default"): Promise<TResult> {
+    return await container(containerName).invoke(name, model);
 }

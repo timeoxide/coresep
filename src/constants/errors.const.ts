@@ -16,4 +16,12 @@ export const ERRORS = {
      * Indicates that a requested command was not found.
      */
     CommandNotFound: "0x0404",
+    /**
+     * Indicates an attempt to set a key that already exists in an immutable map.
+     */
+    KeyExistsInMap: "0x1001",
+    /**
+     * Indicates that two or more commands have the same name within a namespace.
+     */
+    DuplicateCommandsInNamespace: "0x1002",
 };

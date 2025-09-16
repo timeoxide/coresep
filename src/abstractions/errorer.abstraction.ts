@@ -1,6 +1,6 @@
 /** 
  * 
- * The _not-so-gracefull_ error manager.
+ * The _not-so-graceful_ error manager.
  * used to lookup errors by code, add context and throw them.
  * The error codes could be looked up through `ERRORS` constants.
  * 

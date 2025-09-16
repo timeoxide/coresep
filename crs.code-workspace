@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "✨ coresep",
+			"path": "."
+		},
+		{
+			"name": "crstest",
+			"path": "../crstest"
+		},
+		{
+			"name": "crstest2",
+			"path": "../crstest2"
+		}
+	],
+	"settings": {}
+}
