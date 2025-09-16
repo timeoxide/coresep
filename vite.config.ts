@@ -1,12 +1,11 @@
 import { defineConfig } from "vite";
-import mkcert from "vite-plugin-mkcert";
 import dts from "vite-plugin-dts";
 import { config } from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "fs";
 import { resolve } from "path";
-import {nodeExternals} from "rollup-plugin-node-externals"
+import { nodeExternals } from "rollup-plugin-node-externals";
 
 const dirname =
   typeof __dirname !== "undefined"
@@ -37,7 +36,7 @@ export default defineConfig({
       fileName: (format) => `index.${format === "cjs" ? "cjs" : "js"}`,
     },
     rollupOptions: {
-      external: ["node:fs/promises"],
+      external: ["node:fs/promises", "fs-extra", "es-module-lexer", 'vite'],
       output: {
         entryFileNames: "[name].[format].js",
       },
@@ -58,11 +57,10 @@ export default defineConfig({
     ],
   },
   plugins: [
-    mkcert(),
     dts({
       outDir: "./dist/types/",
       insertTypesEntry: true,
     }),
-    nodeExternals({})
+    nodeExternals({}),
   ],
 });

@@ -1,4 +1,4 @@
-import type { Command, CommandModule } from "@/models";
+import type { Command, Module } from "@/models";
 import type { ICrsContainer } from "./container.abstraction";
 
 /**
@@ -43,5 +43,15 @@ export interface ICrsFactory {
    * @param module The module containing commands.
    * @returns The configured factory instance.
    */
-  RegisterModule(module: CommandModule): ICrsFactory;
+  RegisterModule(module: Module): ICrsFactory;
+
+  /**
+   * Registers a module from a specific library to be included in the container.
+   *
+   * ---
+   * @param lib The name or identifier of the library containing the module.
+   * @param module The module containing commands to register from the library.
+   * @returns The configured factory instance.
+   */
+  RegisterModuleFromLib(lib: string, module: Module): ICrsFactory;
 }

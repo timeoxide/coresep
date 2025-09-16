@@ -1,0 +1,1 @@
+export default ()=>`import { container, Factory } from "coresep";`;

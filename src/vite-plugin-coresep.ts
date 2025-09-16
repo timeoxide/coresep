@@ -1,8 +1,10 @@
-import { PluginOption } from "vite";
-import type { CommandFileWrapper, VitePluginOptions } from "./models";
+// import { type PluginOption } from "vite";
+import type { VitePluginOptions, File, WModule } from "./models";
 import * as esModuleLexer from "es-module-lexer";
 import { ViteFileResolver } from "./adaptations";
 import { ViteGlueGenerator } from "./adaptations/generator.vite";
+import { GracefulMap } from "./adaptations/graceful-map.default";
+import { emptyDirSync } from "fs-extra";
 
 /**
  * trims . and \ and ./ from the start and replaces \ with /
@@ -23,7 +25,12 @@ function preparePath(input: string): string {
  *
  * @returns the plugin
  */
-export default function autoCoresep(options?: VitePluginOptions): PluginOption {
+export default function autoCoresep(options?: VitePluginOptions): any {
+  /**
+   * namespace
+   */
+  const namespace = options?.namespace ?? "default";
+
   /**
    * Are we doin typescript?
    */
@@ -50,26 +57,56 @@ export default function autoCoresep(options?: VitePluginOptions): PluginOption {
   const absoluteCommandsDir = `${preparePath(process.cwd())}/${commandsDir}`;
 
   /**
+   * is it a library or an application
+   */
+  const isLib = !!options?.lib;
+
+  /**
+   * should it emit the export to the `package.json` file
+   */
+  const libShouldEmitPackageJson = options?.lib?.emitPackageJson ?? false;
+
+  /**
+   * should it emit a gitignore to the outDir
+   */
+  const shouldEmitGitIgnore = options?.emitGitIgnore ?? true;
+
+  /**
+   * should it emit outDir to `tsconfig.json`'s exclude
+   */
+  const shouldEmitTsConfigExclude = isLib
+    ? false
+    : options?.emitGitIgnore ?? options?.isTs ?? true;
+
+  /**
    * resolver is responsible to handle resolving files to `CommandFileWrapper`
    */
-  const resolver = options?.resolver ?? new ViteFileResolver(absoluteOutDir);
+  const resolver =
+    options?.resolver ??
+    new ViteFileResolver(absoluteOutDir, absoluteCommandsDir);
 
   /**
    * generator is responsible to handle generating glue files.
    */
   const generator =
-    options?.generator ?? new ViteGlueGenerator(absoluteOutDir, isTs);
+    options?.generator ??
+    new ViteGlueGenerator(absoluteOutDir, isTs, isLib, namespace);
 
   /**
    * A list of files tht are already added to the glue
    */
-  const commandFiles = new Map<string, CommandFileWrapper>();
+  const modules = new GracefulMap<string, File[]>("modules");
+
+  /**
+   * the libs
+   */
+  const libs = new GracefulMap<string, WModule[]>("libs");
 
   return {
     /**
      * teh name of the plugin
      */
-    name: "vite-plugin-coresep",
+    name: options?.customPluginName ?? "vite-plugin-coresep",
 
     /**
      * called once, it will retrieve all the existing commands.
@@ -78,6 +115,15 @@ export default function autoCoresep(options?: VitePluginOptions): PluginOption {
      */
     async buildStart() {
       try {
+        // If clearOutDir is set, empty the output directory
+        if (options?.clearOutDir) {
+          /**
+           * Clears the output directory before generating glue files.
+           * Uses fs-extra's emptyDirSync for safety and cross-platform support.
+           */
+          emptyDirSync(absoluteOutDir);
+        }
+
         // wait for es-module-lexer to completely initialize
         await esModuleLexer.init;
 
@@ -85,16 +131,30 @@ export default function autoCoresep(options?: VitePluginOptions): PluginOption {
         this.addWatchFile(commandsDir);
 
         // resolve every command file under input folder
-        const res = await resolver.eachCommandFile(absoluteCommandsDir);
+        const res = await resolver.resolveModules(absoluteCommandsDir);
 
         // add all of the resolved files to `commandFiles`
-        res.forEach((e) => {
-          commandFiles.set(e.absolutePath, e);
-        });
+        for (const [k, v] of res.entries()) {
+          modules.set(k, v);
+        }
+
+        // resolve the libs from input
+        const libsRes = await resolver.resolveLibs(options?.libs ?? []);
+        console.log(options?.libs, libsRes);
+
+        // add all of the resolved files to `commandFiles`
+        for (const [k, v] of libsRes.entries()) {
+          libs.set(k, v);
+        }
 
         // notify the generator to update the automated glue
         await notifyGlueGenerator();
-      }catch{}
+      } catch (error) {
+        console.log(
+          "\x1b[31m\x1b[1m%s\x1b[0m",
+          `  [coresep] \x1b[0mError: ${error}`
+        );
+      }
     },
 
     /**
@@ -103,7 +163,7 @@ export default function autoCoresep(options?: VitePluginOptions): PluginOption {
      * @param param1 contains the event, which has taken place, create / update / delete
      * @returns promise
      */
-    async watchChange(id, { event }) {
+    async watchChange(id: any, { event }: any) {
       try {
         // check if the file is in the target folder and is js or ts
         const isInInputFolder = id.startsWith(absoluteCommandsDir);
@@ -112,39 +172,100 @@ export default function autoCoresep(options?: VitePluginOptions): PluginOption {
           return;
         }
 
-        // if the file is deleted attempt to remove it from `commandFiles`;
+        // if the file is deleted attempt to remove it from all modules by absPath
         if (event == "delete") {
-          // since there is no draw back we will try to delete every file from
-          // it without checking if it is there ;D
-          commandFiles.delete(id);
+          for (const [modKey, files] of modules.entries()) {
+            const idx = files.findIndex((f) => f.absPath === id);
+            if (idx !== -1) {
+              files.splice(idx, 1);
+              // If the module is now empty, remove the module key
+              if (files.length === 0) {
+                modules.delete(modKey);
+              } else {
+                modules.set(modKey, files);
+              }
+              break;
+            }
+          }
         }
         // if it is updated or created check, if it is not in the list
         else {
           // try resolving it
-          const cfw = await resolver.commandFile(id);
+          const file = await resolver.commandFile(id);
 
-          if (!cfw) {
+          if (!file) {
             // if not a command delete it
-            commandFiles.delete(id);
+            for (const [modKey, files] of modules.entries()) {
+              const idx = files.findIndex((f) => f.absPath === id);
+              if (idx !== -1) {
+                files.splice(idx, 1);
+                // If the module is now empty, remove the module key
+                if (files.length === 0) {
+                  modules.delete(modKey);
+                } else {
+                  modules.set(modKey, files);
+                }
+                break;
+              }
+            }
           } else {
-            // if a command add it to `commandFiles`
-            commandFiles.set(id, cfw);
+            // Add or update the file in the correct module (namespace)
+            const namespace = file.parent.replace(/[\/]/g, ".");
+            modules.update(
+              namespace,
+              (arr: File[]) => {
+                // Remove any previous file with the same exportName
+                const filtered = arr.filter(
+                  (f) => f.exportName !== file.exportName
+                );
+                filtered.push(file);
+                return filtered;
+              },
+              [file]
+            );
           }
         }
 
         // update the glue
         await notifyGlueGenerator();
-      }catch{}
+      } catch (error) {
+        console.log(
+          "\x1b[31m\x1b[1m%s\x1b[0m",
+          `  [coresep] \x1b[0mError: ${error}`
+        );
+      }
     },
   };
 
   async function notifyGlueGenerator() {
     if (options?.verbose) {
+      const totalFiles = [...modules.values()].reduce(
+        (sum, arr) => sum + arr.length,
+        0
+      );
       console.log(
         "\x1b[32m\x1b[1m%s\x1b[0m",
-        `  [coresep] \x1b[0mGenerating glue files... (${commandFiles.size} command(s).)`
+        `  [coresep] \x1b[0mGenerating glue files...`
+      );
+      console.log(
+        "\x1b[32m\x1b[1m%s\x1b[0m",
+        `  [coresep] \x1b[0m${modules.size} module(s).`
+      );
+      console.log(
+        "\x1b[32m\x1b[1m%s\x1b[0m",
+        `  [coresep] \x1b[0m${totalFiles} command(s).`
       );
     }
-    await generator.generateGlue([...commandFiles.values()]);
+
+    await generator.generateGlue(modules, libs, isLib, isTs);
+    if (libShouldEmitPackageJson) {
+      await generator.emitPackageJson();
+    }
+    if (shouldEmitGitIgnore) {
+      await generator.emitGitIgnore();
+    }
+    if (shouldEmitTsConfigExclude) {
+      await generator.emitTsConfigExclude();
+    }
   }
 }

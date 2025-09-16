@@ -1,11 +1,15 @@
-import { CommandFileWrapper } from "@/models";
+import { File, WModule } from "@/models";
+import { IGracefulMap } from "./graceful-map.abstraction";
 
 export interface ICrsGlueGenerator {
   generateGlue(
-    commands: Array<CommandFileWrapper>
+    modules: IGracefulMap<string, File[]>,
+    libs: IGracefulMap<string, WModule[]>,
+    isLib?: boolean,
+    isTs?: boolean
   ): Promise<void>;
 
-  generateInitializationGlue(
-    modules: Map<string, CommandFileWrapper[]>
-  ): Promise<void>;
+  emitGitIgnore(): Promise<void>;
+  emitPackageJson(): Promise<void>;
+  emitTsConfigExclude(): Promise<void>;
 }

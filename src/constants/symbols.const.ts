@@ -3,8 +3,9 @@
  * or other purposes requiring globally unique identifiers.
  */
 export const SYMBOLS = {
-    /**
-     * Symbol used to identify the singleton container in the core separation module.
-     */
-    SingletonContainer: Symbol.for("symbol.singleton.coresep"),
+  /**
+   * Symbol used to identify the singleton container in the core separation module.
+   */
+  SingletonContainer: (name: string) =>
+    Symbol.for(`symbol.singleton.coresep.${name}`),
 };

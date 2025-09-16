@@ -32,6 +32,6 @@ import { container } from "./container.singleton";
  * @param model Optional model to pass to the function.
  * @returns The result of the invoked function.
  */
-export async function invoke<TModel = any | undefined, TResult = any>(name: string, model?: TModel): Promise<TResult> {
-    return await container().invoke(name, model);
+export async function invoke<TModel = any | undefined, TResult = any>(name: string, model?: TModel, containerName = "default"): Promise<TResult> {
+    return await container(containerName).invoke(name, model);
 }

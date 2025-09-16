@@ -1,0 +1,1 @@
+export const KeyExistsInMap: Error = new Error("0x1001 KEY_EXISTS_IN_MAP");

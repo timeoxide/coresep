@@ -1,6 +1,6 @@
 import { Command } from "./command.model";
 
-export interface CommandModule {
+export interface Module {
     name: string,
     commands: { [key: string]: (Command) | (() => Promise<Command>) }
 }

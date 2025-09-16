@@ -27,6 +27,6 @@ import { SYMBOLS } from "./constants/symbols.const";
  * ---
  * @returns The `ICrsContainer` instance if built with `.AsWindowProp()`, otherwise `undefined`.
  */
-export function container(): ICrsContainer {
-  return (globalThis as any)[SYMBOLS.SingletonContainer];
+export function container(name = "default"): ICrsContainer {
+  return (globalThis as any)[SYMBOLS.SingletonContainer(name)];
 }

@@ -1,76 +1,41 @@
+import ascii from "./glue/ascii";
+import command_import_record from "./glue/command_import_record";
+import create_lib from "./glue/create_lib";
+import create_module from "./glue/create_module";
+import gitignore from "./glue/gitignore";
+import import_container from "./glue/import_container";
+import import_factory from "./glue/import_factory";
+import import_lib from "./glue/import_lib";
+import import_module from "./glue/import_module";
+import import_modules_from_lib from "./glue/import_modules_from_lib";
+import initialization_function from "./glue/initialization_function";
+import initialization_types from "./glue/initialization_types";
+import module_import_record from "./glue/module_import_record";
+import reexport_module from "./glue/reexport_module";
+import ts_functions_map from "./glue/ts_functions_map";
 
 /**
  * A constants object of string templates used to generate glue codes
  */
 export const GLUE = {
-  ASCII: `/*
- *  This file is auto generated and probably will be overwritten again ;D
- * 
- *  █████╗ ██╗   ██╗████████╗ ██████╗        ██████╗ ███████╗███╗   ██╗
- * ██╔══██╗██║   ██║╚══██╔══╝██╔═══██╗      ██╔════╝ ██╔════╝████╗  ██║
- * ███████║██║   ██║   ██║   ██║   ██║█████╗██║  ███╗█████╗  ██╔██╗ ██║
- * ██╔══██║██║   ██║   ██║   ██║   ██║╚════╝██║   ██║██╔══╝  ██║╚██╗██║
- * ██║  ██║╚██████╔╝   ██║   ╚██████╔╝      ╚██████╔╝███████╗██║ ╚████║
- * ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝        ╚═════╝ ╚══════╝╚═╝  ╚═══╝
- */`,
+  // design
+  ASCII: ascii,
 
-  Module: (moduleName: string, commands: string) => `
-export const name = "${moduleName}";
-export const commands = {
-  ${commands}
-}
-`,
-  Command: (key: string, importPath: string) =>
-    `"${key}": async () => await import("${importPath}")`,
+  // file generation
+  CreateModule: create_module,
+  CreateLib: create_lib,
+  ReexportModule: reexport_module,
+  GitIgnore: gitignore,
 
-  ImportFactory: `import { container, Factory } from "coresep";`,
-  ImportContainer: `import { container } from "coresep";`,
-
-  ImportModule: (moduleName: string) =>
-    `import * as ${moduleName
-      .replace(/-/g, "_")
-      .replace(/\./g, "_")} from "./${moduleName}";`,
-  
-  TsFunctionsDeclaration: (
-    args: { parent: string; importPath: string; exportKey: string }[]
-  ) =>
-    `type FunctionMap = {
-    ${args
-      .map(
-        (e) =>
-          `"${e.parent}.${e.exportKey}": typeof import("${e.importPath}")["handler"]`
-      )
-      .join(",\n\t")}
-}`,
-  InitilizeCoresepJs: (moduleNames: string[]) =>
-    `/**
- * Initialize Coresep's singlton container.
- */
-export function initializeCoresep() {
-  Factory.new()${moduleNames
-    .map(
-      (e) =>
-        `\n\t\t.RegisterModule(${e.replace(/-/g, "_").replace(/\./g, "_")})`
-    )
-    .join("")}
-    .Singlton()
-    .Build();
-}
-`,
-  TsType: () => `
-type FunctionName = keyof FunctionMap;
-type ArgsType<T extends FunctionName> = Parameters<FunctionMap[T]>[0];
-type ResultType<T extends FunctionName> = ReturnType<FunctionMap[T]>;
-
-
-/**
- * Invoke the command, with type-safty, intellisense and ease.
- * @param name your command to invoke
- * @param args arguments of the command
- * @returns the result of the command
- */
-export async function invoke<T extends FunctionName>(name: T,	...args: ArgsType<T> extends undefined ? [] : [ArgsType<T>]): Promise<Awaited<ResultType<T>>> {
-  return await container().invoke(name, ...args) as any;
-}
-`,
+  // segmentation
+  CommandImportRecord: command_import_record,
+  ModuleImportRecord: module_import_record,
+  ImportModulesFromLib: import_modules_from_lib,
+  ImportLib: import_lib,
+  ImportFactory: import_factory,
+  ImportContainer: import_container,
+  ImportModule: import_module,
+  TsFunctionsMap: ts_functions_map,
+  InitilizationFunction: initialization_function,
+  TsType: initialization_types,
 };
