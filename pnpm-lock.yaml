@@ -13,8 +13,8 @@ importers:
         version: 3.3.1
     devDependencies:
       '@types/es-module-lexer':
-        specifier: ^0.4.3
-        version: 0.4.3
+        specifier: 0.3.0
+        version: 0.3.0
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
@@ -453,9 +453,8 @@ packages:
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
 
-  '@types/es-module-lexer@0.4.3':
-    resolution: {integrity: sha512-F98XmC3BADajV4M9i5Edt5m/mC0MIIWTTrSECG9ySp2h9qoo1a74H28Di2CmltpEV9AsM1HMwXLVIVO+XaeTyw==}
-    deprecated: This is a stub types definition. es-module-lexer provides its own type definitions, so you do not need this installed.
+  '@types/es-module-lexer@0.3.0':
+    resolution: {integrity: sha512-XI3MGSejUQIJ3wzY0i5IHy5J3eb36M/ytgG8jIOssP08ovtRPcjpjXQqrx51AHBNBOisTS/NQNWJitI17+EwzQ==}
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
@@ -1962,9 +1961,7 @@ snapshots:
 
   '@types/deep-eql@4.0.2': {}
 
-  '@types/es-module-lexer@0.4.3':
-    dependencies:
-      es-module-lexer: 1.7.0
+  '@types/es-module-lexer@0.3.0': {}
 
   '@types/estree@1.0.8': {}
 
