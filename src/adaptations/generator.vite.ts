@@ -153,7 +153,7 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
     }
 
     if (isLib) {
-      await this.generateLibGlue(modules, isTs);
+      await this.generateLibGlue(libs, modules, isTs);
     } else {
       await this.generateInitializationGlue(modules, libs, isTs);
     }
@@ -243,44 +243,81 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
       GLUE.ImportFactory(),
     ].join("\n");
 
-    // get the list of moduleNames
-    const moduleNames = [...modules.keys()];
+    {
+      // get the list of moduleNames
+      const moduleNames = [...modules.keys()];
+      const content = [
+        GLUE.InitilizationFunction([...moduleNames], [...libNames]),
+      ].join("\n");
 
-    // Collect all files from every module as { importPath, key }
-    const tsFunctionsMapArray = ([] as File[])
-      .concat(...[...modules.values()])
-      .map((f) => {
-        const relModulePath = f.relPath!;
-        // Compute absolute path as if running in ./modules
-        const modulesDir = path.resolve(this.outDir, "modules");
-        const d = path.resolve(modulesDir, relModulePath);
-        return {
-          importPath: path.relative(this.outDir, d).replace(/\\/g, "/"),
-          key: f.exportName,
-        };
-      });
+      await this.generateFileWithHeader(
+        `index.${isTs ? "ts" : "js"}`,
+        this.outDir,
+        imports,
+        content
+      );
+    }
+    if (isTs) {
+      // Collect all files from every module as { importPath, key }
+      const tsFunctionsMapArray = ([] as File[])
+        .concat(...[...modules.values()])
+        .map((f) => {
+          const relModulePath = f.relPath!;
+          // Compute absolute path as if running in ./modules
+          const modulesDir = path.resolve(this.outDir, "modules");
+          const d = path.resolve(modulesDir, relModulePath);
+          return {
+            importPath: path.relative(this.outDir, d).replace(/\\/g, "/"),
+            key: f.exportName,
+          };
+        });
 
-    const content = [
-      GLUE.InitilizationFunction([...moduleNames], [...libNames]),
-      ...(isTs
-        ? [GLUE.TsFunctionsMap(tsFunctionsMapArray, tsFunctionsLibsArray)]
-        : []),
-      ...(isTs ? [GLUE.TsType(this.namespace)] : []),
-    ].join("\n");
+      const content = [
+        ...(isTs
+          ? [GLUE.TsFunctionsMap(tsFunctionsMapArray, tsFunctionsLibsArray)]
+          : []),
+        ...(isTs ? [GLUE.TsType()] : []),
+      ].join("\n");
 
-    await this.generateFileWithHeader(
-      `index.${isTs ? "ts" : "js"}`,
-      this.outDir,
-      imports,
-      content
-    );
+      await this.generateFileWithHeader(
+        `coresep-env.d.ts`,
+        path.resolve(this.outDir, ".."),
+        "",
+        content
+      );
+    }
   }
-  
+
   async generateLibGlue(
-    // libs: IGracefulMap<string, WModule[]>,
+    libs: IGracefulMap<string, WModule[]>,
     modules: IGracefulMap<string, File[]>,
     isTs: boolean
   ) {
+    const tsFunctionsLibsArray: {
+      key: string;
+      libName: string;
+      moduleName: string;
+      commandName: string;
+    }[] = [];
+    const libKeys = [...libs.keys()];
+    for (let i = 0; i < libKeys.length; i++) {
+      const lib = libKeys[i];
+      const modules = libs.get(lib)!;
+      for (let j = 0; j < modules.length; j++) {
+        const module = modules[j];
+        for (const key in module.module.commands) {
+          const command = module.module.commands[key];
+
+          tsFunctionsLibsArray.push({
+            key: `${key}`,
+            commandName: command.name,
+            moduleName: module.module.name,
+            libName: lib,
+          });
+        }
+      }
+    }
+
     const imports = [...modules.entries()]
       .map(([k]) =>
         GLUE.ImportModule(
@@ -309,6 +346,36 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
       imports,
       content
     );
+
+    if (isTs) {
+      // Collect all files from every module as { importPath, key }
+      const tsFunctionsMapArray = ([] as File[])
+        .concat(...[...modules.values()])
+        .map((f) => {
+          const relModulePath = f.relPath!;
+          // Compute absolute path as if running in ./modules
+          const modulesDir = path.resolve(this.outDir, "modules");
+          const d = path.resolve(modulesDir, relModulePath);
+          return {
+            importPath: path.relative(this.outDir, d).replace(/\\/g, "/"),
+            key: f.exportName,
+          };
+        });
+
+      const content = [
+        ...(isTs
+          ? [GLUE.TsFunctionsMap(tsFunctionsMapArray, tsFunctionsLibsArray)]
+          : []),
+        ...(isTs ? [GLUE.TsType()] : []),
+      ].join("\n");
+
+      await this.generateFileWithHeader(
+        `coresep-env.d.ts`,
+        path.resolve(this.outDir, ".."),
+        "",
+        content
+      );
+    }
   }
 
   /**

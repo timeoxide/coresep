@@ -1,5 +1,6 @@
 import ascii from "./glue/ascii";
 import command_import_record from "./glue/command_import_record";
+import coresep_types from "./glue/coresep_types";
 import create_lib from "./glue/create_lib";
 import create_module from "./glue/create_module";
 import gitignore from "./glue/gitignore";
@@ -9,7 +10,6 @@ import import_lib from "./glue/import_lib";
 import import_module from "./glue/import_module";
 import import_modules_from_lib from "./glue/import_modules_from_lib";
 import initialization_function from "./glue/initialization_function";
-import initialization_types from "./glue/initialization_types";
 import module_import_record from "./glue/module_import_record";
 import reexport_module from "./glue/reexport_module";
 import ts_functions_map from "./glue/ts_functions_map";
@@ -37,5 +37,5 @@ export const GLUE = {
   ImportModule: import_module,
   TsFunctionsMap: ts_functions_map,
   InitilizationFunction: initialization_function,
-  TsType: initialization_types,
+  TsType: coresep_types,
 };

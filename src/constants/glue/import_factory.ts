@@ -1,1 +1,1 @@
-export default ()=>`import { container, Factory } from "coresep";`;
+export default ()=>`import { Factory } from "coresep";`;
