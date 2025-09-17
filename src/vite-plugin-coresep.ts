@@ -74,9 +74,7 @@ export default function autoCoresep(options?: VitePluginOptions): any {
   /**
    * should it emit outDir to `tsconfig.json`'s exclude
    */
-  const shouldEmitTsConfigExclude = isLib
-    ? false
-    : options?.emitGitIgnore ?? options?.isTs ?? true;
+  const shouldEmitTsConfigExclude = options?.emitGitIgnore ?? options?.isTs ?? true;
 
   /**
    * resolver is responsible to handle resolving files to `CommandFileWrapper`
@@ -104,7 +102,7 @@ export default function autoCoresep(options?: VitePluginOptions): any {
 
   return {
     /**
-     * teh name of the plugin
+     * the name of the plugin
      */
     name: options?.customPluginName ?? "vite-plugin-coresep",
 
@@ -140,7 +138,6 @@ export default function autoCoresep(options?: VitePluginOptions): any {
 
         // resolve the libs from input
         const libsRes = await resolver.resolveLibs(options?.libs ?? []);
-        console.log(options?.libs, libsRes);
 
         // add all of the resolved files to `commandFiles`
         for (const [k, v] of libsRes.entries()) {

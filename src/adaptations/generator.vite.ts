@@ -164,8 +164,6 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
     moduleName: string,
     isTs: boolean
   ) {
-    console.log(libName, moduleName);
-
     await this.generateFileWithHeader(
       `${libName}/${moduleName}.${isTs ? "ts" : "js"}`,
       path.resolve(this.outDir, "libs"),

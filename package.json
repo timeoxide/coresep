@@ -1,6 +1,6 @@
 {
   "name": "coresep",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A Command Responsibility Separation package hoping to impress you!",
   "license": "MIT",
   "type": "module",
