@@ -62,6 +62,8 @@ export interface VitePluginOptions {
 
   /**
    * If true, add the output directory to tsconfig.json's exclude array.
+   * 
+   * ___watch out!___ it causes problems with exporting types
    * @default true (if isTs is true)
    */
   emitTsConfigExclude?: boolean;

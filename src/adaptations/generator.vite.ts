@@ -95,13 +95,6 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
     if (!pkg.exports) {
       pkg.exports = {};
     }
-    // Add default export if not present
-    if (!pkg.exports["."]) {
-      pkg.exports["."] = {
-        import: defaultExportPath,
-        require: defaultExportPath,
-      };
-    }
     // If TypeScript, always add types entry
     if (this.isTs) {
       pkg.exports["."].types = "./dist/types/lib/index.d.ts";
@@ -109,6 +102,13 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
       if (!pkg.types) {
         pkg.types = "./dist/types/lib/index.d.ts";
       }
+    }
+    // Add default export if not present
+    if (!pkg.exports["."]) {
+      pkg.exports["."] = {
+        import: defaultExportPath,
+        require: defaultExportPath,
+      };
     }
     // Always ensure import/require are present
     if (!pkg.exports["."].import) {
@@ -337,7 +337,7 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
       this.namespace,
       [...modules.entries()]
         .map(([k]) => GLUE.ModuleImportRecord(k))
-        .join("\n\t\t")
+        .join(",\n\t")
     );
 
     await this.generateFileWithHeader(

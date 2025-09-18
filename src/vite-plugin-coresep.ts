@@ -73,8 +73,9 @@ export default function autoCoresep(options?: VitePluginOptions): any {
 
   /**
    * should it emit outDir to `tsconfig.json`'s exclude
+   * it causes problems with exporting types, watch out!
    */
-  const shouldEmitTsConfigExclude = options?.emitGitIgnore ?? options?.isTs ?? true;
+  const shouldEmitTsConfigExclude = options?.emitTsConfigExclude ?? false;
 
   /**
    * resolver is responsible to handle resolving files to `CommandFileWrapper`

@@ -1,2 +1,4 @@
 export default (module: string) =>
-  `"${module}": ${module}`;
+  `"${module}": ${module
+    .replace(/-/g, "_")
+    .replace(/\./g, "_")}`;
