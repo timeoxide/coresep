@@ -92,30 +92,38 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
     }
     // Default Vite output for libraries is dist/index.js
     const defaultExportPath = "./dist/index.js";
+    const defaultExportTypes = "./dist/types/lib/index.d.ts";
     if (!pkg.exports) {
       pkg.exports = {};
     }
     // If TypeScript, always add types entry
-    if (this.isTs) {
-      pkg.exports["."].types = "./dist/types/lib/index.d.ts";
-      // Also add top-level types field if not present
-      if (!pkg.types) {
-        pkg.types = "./dist/types/lib/index.d.ts";
-      }
-    }
+
     // Add default export if not present
     if (!pkg.exports["."]) {
-      pkg.exports["."] = {
-        import: defaultExportPath,
-        require: defaultExportPath,
-      };
-    }
-    // Always ensure import/require are present
-    if (!pkg.exports["."].import) {
-      pkg.exports["."].import = defaultExportPath;
-    }
-    if (!pkg.exports["."].require) {
-      pkg.exports["."].require = defaultExportPath;
+      if (this.isTs) {
+        pkg.exports["."] = {
+          types: defaultExportTypes,
+          import: defaultExportPath,
+          require: defaultExportPath,
+        };
+        pkg.types = "./dist/types/lib/index.d.ts";
+      } else {
+        pkg.exports["."] = {
+          import: defaultExportPath,
+          require: defaultExportPath,
+        };
+      }
+    } else {
+      // Always ensure import/require are present
+      if (!pkg.exports["."].types) {
+        pkg.exports["."].types = defaultExportTypes;
+      }
+      if (!pkg.exports["."].import) {
+        pkg.exports["."].import = defaultExportPath;
+      }
+      if (!pkg.exports["."].require) {
+        pkg.exports["."].require = defaultExportPath;
+      }
     }
     // Write back only if changed
     const newPkgRaw = JSON.stringify(pkg, null, 2) + "\n";
