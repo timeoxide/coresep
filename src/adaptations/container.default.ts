@@ -31,6 +31,7 @@ export class DefaultContainer implements ICrsContainer {
         if (!initiator)
             errorer
                 .select(ERRORS.CommandNotFound)
+                .withContext(`asked for: ${name}`)
                 .withContext(`present initiators: ${JSON.stringify(this.initiators.keys())}`)
                 .throw();
 

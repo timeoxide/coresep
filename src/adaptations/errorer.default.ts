@@ -76,7 +76,7 @@ export class Errorer implements IErrorer {
    */
   public withContext(message: string): IErrorer {
     this.ensureError();
-    this.error!.stack = `${message}\n${this.error!.stack}`;
+    this.error!.message = `${message}\n${this.error!.message}`;
     return this;
   }
 
