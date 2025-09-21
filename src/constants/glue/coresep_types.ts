@@ -12,8 +12,7 @@ declare module "coresep" {
    */
   export function invoke<T extends FunctionName>(
     name: T,
-    args?: ArgsType<T> extends undefined ? [] : [ArgsType<T>],
-    containerName?: string
+    model?: ArgsType<T> extends undefined ? undefined : ArgsType<T>,
   ): Promise<Awaited<ResultType<T>>>;
 
   export { container, factory, Factory } from "coresep";
