@@ -203,7 +203,7 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
     isTs: boolean
   ) {
     const libImports: string[] = [];
-    const libNames: { lib: string; module: string }[] = [];
+    const libNames: string[] = [];
     const tsFunctionsLibsArray: {
       key: string;
       libName: string;
@@ -217,10 +217,7 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
       const modules = libs.get(lib)!;
       for (let j = 0; j < modules.length; j++) {
         const module = modules[j];
-        libNames.push({
-          lib: libKeys[i],
-          module: `${lib}_${module.file.exportName}`,
-        });
+        libNames.push(`${lib}_${module.file.exportName}`);
         libImports.push(
           GLUE.ImportLib(
             `${lib}_${module.file.exportName}`,
@@ -255,7 +252,7 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
       // get the list of moduleNames
       const moduleNames = [...modules.keys()];
       const content = [
-        GLUE.InitilizationFunction([...moduleNames], [...libNames]),
+        GLUE.InitilizationFunction([...moduleNames, ...libNames]),
       ].join("\n");
 
       await this.generateFileWithHeader(
@@ -366,7 +363,7 @@ export class ViteGlueGenerator implements ICrsGlueGenerator {
           const d = path.resolve(modulesDir, relModulePath);
           return {
             importPath: path.relative(this.outDir, d).replace(/\\/g, "/"),
-            key: f.exportName,
+            key: `${this.namespace}.${f.exportName}`,
           };
         });
 

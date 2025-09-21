@@ -138,35 +138,4 @@ export class DefaultFactory implements ICrsFactory {
     }
     return this;
   }
-
-  /**
-   * Registers a module containing multiple commands with the factory.
-   *
-   * Dependending on the type of the registered command (lazy or eager),
-   * it uses the correct initiator to hold the command for usage
-   *
-   * ---
-   * @param module The module containing commands to register.
-   * @returns The configured factory instance.
-   */
-  public RegisterModuleFromLib(lib: string, module: Module) {
-    for (const key in module.commands) {
-      if (!Object.prototype.hasOwnProperty.call(module.commands, key)) {
-        continue;
-      }
-      const command = module.commands[key];
-      if (typeof command == "function") {
-        const name = `${key}`;
-        this.initiators.set(`${lib}.${name}`, new LazyInitiator(command, `${lib}.${name}`));
-      } else {
-        this.initiators.set(
-          `${lib}.${command.name}${command.version ? "@" : ""}${
-            command.version ?? ""
-          }`,
-          new PreloadedInitiator(command)
-        );
-      }
-    }
-    return this;
-  }
 }
